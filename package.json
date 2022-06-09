@@ -62,7 +62,8 @@
     "tsconfig.json"
   ],
   "dependencies": {
-    "pug-lexer": "^5.0.1"
+    "gray-matter": "^4.0.3",
+    "pug-lexer": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/compat": "1.4.1",
