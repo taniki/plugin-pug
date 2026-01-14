@@ -1,3 +1,4 @@
+import { types } from 'node:util';
 import type { BuiltInParserName, Options, RequiredOptions } from 'prettier';
 import { format } from 'prettier';
 import type PrettierAngularPlugin from 'prettier/plugins/angular';

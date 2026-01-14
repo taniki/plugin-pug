@@ -15,7 +15,7 @@ import { options as pugOptions } from './options';
 import { convergeOptions } from './options/converge';
 import type { PugPrinterOptions } from './printer';
 import { PugPrinter } from './printer';
-import { default as parseFrontmatter } from './utils/frontmatter/parse';
+import parseFrontmatter from './utils/frontmatter/parse';
 
 /** Ast path stack entry. */
 interface AstPathStackEntry {
@@ -101,7 +101,8 @@ export const plugin: Plugin<AstPathStackEntry> = {
   },
   printers: {
     'pug-ast': {
-      print(
+      // @ts-expect-error: Prettier allow it to be async if we don't do recursively print
+      async print(
         path: AstPath,
         options: ParserOptions & PugParserOptions,
         print: (path: AstPath) => Doc,
@@ -115,7 +116,7 @@ export const plugin: Plugin<AstPathStackEntry> = {
           pugOptions,
           frontmatter,
         );
-        const result: string = printer.build();
+        const result: string = await printer.build();
         logger.debug('[printers:pug-ast:print]:', result);
         return result;
       },
