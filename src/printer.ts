@@ -1,4 +1,4 @@
-import matter = require('gray-matter');
+// import matter = require('gray-matter');
 import type { BuiltInParserName, Options, RequiredOptions } from 'prettier';
 import { format } from 'prettier';
 import type PrettierAngularPlugin from 'prettier/plugins/angular';
@@ -242,7 +242,7 @@ export class PugPrinter {
     private readonly content: string,
     private tokens: Token[],
     private readonly options: PugPrinterOptions,
-    private frontmatter: matter.GrayMatterFile<string>,
+    private frontmatter: Frontmatter<string>,
   ) {
     this.frontmatter = frontmatter;
     this.indentString = options.pugUseTabs
@@ -391,7 +391,10 @@ export class PugPrinter {
 
       token = this.getNextToken();
     }
-    return matter.stringify(results.join(''), this.frontmatter.data);
+    console.log(this.frontmatter);
+    //return matter.stringify(results.join(''), this.frontmatter.raw);
+    console.log(this.frontmatter);
+    return this.frontmatter.raw + results.join('');
   }
 
   private getNextToken(): Token | null {
