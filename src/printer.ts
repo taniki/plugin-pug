@@ -241,7 +241,7 @@ export class PugPrinter {
     private readonly content: string,
     private tokens: Token[],
     private readonly options: PugPrinterOptions,
-    private frontmatter: Frontmatter<string>,
+    private readonly frontmatter: Frontmatter<string>,
   ) {
     this.frontmatter = frontmatter;
     this.indentString = options.pugUseTabs
@@ -391,10 +391,14 @@ export class PugPrinter {
       token = this.getNextToken();
     }
 
-    const fm = await this.frontmatterFormat(this.frontmatter.value);
-    const formattedFrontmatter = this.frontmatter ? '---\n' + fm + '---\n' : '';
+    if (this.frontmatter) {
+      const frontmatter: string = await this.frontmatterFormat(
+        this.frontmatter.value,
+      );
+      results.unshift('---\n', frontmatter, '---\n');
+    }
 
-    return formattedFrontmatter + results.join('');
+    return results.join('');
   }
 
   private getNextToken(): Token | null {
@@ -483,12 +487,14 @@ export class PugPrinter {
   }
 
   private async frontmatterFormat(frontmatter: string): Promise<string> {
-    const options = {
+    const options: Options = {
       parser: 'yaml',
       collectionStyle: 'block',
     };
 
-    return format(frontmatter, options);
+    const result: string = await format(frontmatter, options);
+
+    return result;
   }
 
   private async frameworkFormat(code: string): Promise<string> {
