@@ -15,13 +15,13 @@ import { options as pugOptions } from './options';
 import { convergeOptions } from './options/converge';
 import type { PugPrinterOptions } from './printer';
 import { PugPrinter } from './printer';
-import parse from './utils/frontmatter/parse';
+import { default as parseFrontmatter } from './utils/frontmatter/parse';
 
 /** Ast path stack entry. */
 interface AstPathStackEntry {
   content: string;
   tokens: Token[];
-  frontmatter: Frontmatter<string>;
+  frontmatter: string;
 }
 
 /** The plugin object that is picked up by prettier. */
@@ -45,8 +45,10 @@ export const plugin: Plugin<AstPathStackEntry> = {
       parse(text, options) {
         logger.debug('[parsers:pug:parse]:', { text });
 
-        const parts = parse(text);
-        const frontmatter = parts.frontMatter;
+        const parts: FrontMatter = parseFrontmatter(text);
+        const frontmatter: string = parts.frontMatter
+          ? parts.frontMatter.value
+          : undefined;
         text = parts.content;
 
         let trimmedAndAlignedContent: string = text.replace(/^\s*\n/, '');

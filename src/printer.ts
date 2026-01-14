@@ -236,12 +236,13 @@ export class PugPrinter {
    * @param content The pug content string.
    * @param tokens The pug token array.
    * @param options Options for the printer.
+   * @param frontmatter The extracted frontmatter part.
    */
   public constructor(
     private readonly content: string,
     private tokens: Token[],
     private readonly options: PugPrinterOptions,
-    private readonly frontmatter: Frontmatter<string>,
+    private readonly frontmatter: string,
   ) {
     this.frontmatter = frontmatter;
     this.indentString = options.pugUseTabs
@@ -392,10 +393,15 @@ export class PugPrinter {
     }
 
     if (this.frontmatter) {
-      const frontmatter: string = await this.frontmatterFormat(
-        this.frontmatter.value,
-      );
-      results.unshift('---\n', frontmatter, '---\n');
+      try {
+        results.unshift(
+          '---\n',
+          await this.frontmatterFormat(this.frontmatter),
+          '---\n',
+        );
+      } catch (error: any) {
+        logger.warn(error);
+      }
     }
 
     return results.join('');
