@@ -1,4 +1,3 @@
-import matter = require('gray-matter');
 import type {
   Parser,
   ParserOptions,
@@ -16,12 +15,13 @@ import { options as pugOptions } from './options';
 import { convergeOptions } from './options/converge';
 import type { PugPrinterOptions } from './printer';
 import { PugPrinter } from './printer';
+import parse from './utils/frontmatter/parse';
 
 /** Ast path stack entry. */
 interface AstPathStackEntry {
   content: string;
   tokens: Token[];
-  frontmatter: matter.GrayMatterFile<string>;
+  frontmatter: Frontmatter<string>;
 }
 
 /** The plugin object that is picked up by prettier. */
@@ -44,8 +44,10 @@ export const plugin: Plugin<AstPathStackEntry> = {
     pug: {
       parse(text, options) {
         logger.debug('[parsers:pug:parse]:', { text });
-        const frontmatter = matter(text);
-        text = frontmatter.content;
+
+        const parts = parse(text);
+        const frontmatter = parts.frontMatter;
+        text = parts.content;
 
         let trimmedAndAlignedContent: string = text.replace(/^\s*\n/, '');
         const contentIndentation: RegExpExecArray | null = /^\s*/.exec(
