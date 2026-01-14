@@ -1,4 +1,3 @@
-// import matter = require('gray-matter');
 import type { BuiltInParserName, Options, RequiredOptions } from 'prettier';
 import { format } from 'prettier';
 import type PrettierAngularPlugin from 'prettier/plugins/angular';
@@ -391,10 +390,11 @@ export class PugPrinter {
 
       token = this.getNextToken();
     }
-    console.log(this.frontmatter);
-    //return matter.stringify(results.join(''), this.frontmatter.raw);
-    console.log(this.frontmatter);
-    return this.frontmatter.raw + results.join('');
+
+    const fm = await this.frontmatterFormat(this.frontmatter.value);
+    const formattedFrontmatter = this.frontmatter ? '---\n' + fm + '---\n' : '';
+
+    return formattedFrontmatter + results.join('');
   }
 
   private getNextToken(): Token | null {
@@ -480,6 +480,15 @@ export class PugPrinter {
       this.possibleIdPosition -= diff;
       this.possibleClassPosition -= diff;
     }
+  }
+
+  private async frontmatterFormat(frontmatter: string): Promise<string> {
+    const options = {
+      parser: 'yaml',
+      collectionStyle: 'block',
+    };
+
+    return format(frontmatter, options);
   }
 
   private async frameworkFormat(code: string): Promise<string> {
